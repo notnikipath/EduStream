@@ -1,0 +1,148 @@
+﻿services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    container_name: edustream-api-gateway
+    env_file: .env
+    ports:
+      - "8380:8300"
+    depends_on:
+      - course-service
+      - learning-service
+      - test-service
+      - webinar-service
+      - gamification-service
+      - analytics-service
+      - notification-service
+    networks: [edustream-net]
+  course-service:
+    build:
+      context: .
+      dockerfile: course-service/Dockerfile
+    container_name: edustream-course
+    env_file: .env
+    ports:
+      - "8301:8301"
+    depends_on:
+      - postgres
+      - redis
+    networks: [edustream-net]
+  learning-service:
+    build:
+      context: .
+      dockerfile: learning-service/Dockerfile
+    container_name: edustream-learning
+    env_file: .env
+    ports:
+      - "8302:8302"
+    depends_on:
+      - postgres
+      - redis
+    networks: [edustream-net]
+  test-service:
+    build:
+      context: .
+      dockerfile: test-service/Dockerfile
+    container_name: edustream-test
+    env_file: .env
+    ports:
+      - "8303:8303"
+    depends_on:
+      - postgres
+      - redis
+    networks: [edustream-net]
+  webinar-service:
+    build:
+      context: .
+      dockerfile: webinar-service/Dockerfile
+    container_name: edustream-webinar
+    env_file: .env
+    ports:
+      - "8304:8304"
+    depends_on:
+      - redis
+      - minio
+    networks: [edustream-net]
+  gamification-service:
+    build:
+      context: .
+      dockerfile: gamification-service/Dockerfile
+    container_name: edustream-gamification
+    env_file: .env
+    ports:
+      - "8305:8305"
+    depends_on:
+      - postgres
+    networks: [edustream-net]
+  analytics-service:
+    build:
+      context: .
+      dockerfile: analytics-service/Dockerfile
+    container_name: edustream-analytics
+    env_file: .env
+    ports:
+      - "8306:8306"
+    depends_on:
+      - postgres
+      - redis
+    networks: [edustream-net]
+  notification-service:
+    build:
+      context: .
+      dockerfile: notification-service/Dockerfile
+    container_name: edustream-notification
+    env_file: .env
+    ports:
+      - "8307:8307"
+    depends_on:
+      - redis
+    networks: [edustream-net]
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: edustream-frontend
+    env_file: .env
+    ports:
+      - "5176:5176"
+    depends_on:
+      - api-gateway
+    networks: [edustream-net]
+  postgres:
+    image: postgres:16
+    container_name: edustream-postgres
+    environment:
+      POSTGRES_DB: edustream
+      POSTGRES_USER: edustream
+      POSTGRES_PASSWORD: edustream
+    ports:
+      - "55434:5432"
+    volumes:
+      - edustream_postgres_data:/var/lib/postgresql/data
+    networks: [edustream-net]
+  redis:
+    image: redis:7
+    container_name: edustream-redis
+    ports:
+      - "6382:6379"
+    networks: [edustream-net]
+  minio:
+    image: minio/minio:RELEASE.2025-01-20T14-49-07Z
+    container_name: edustream-minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    ports:
+      - "9300:9000"
+      - "9301:9001"
+    volumes:
+      - edustream_minio_data:/data
+    networks: [edustream-net]
+networks:
+  edustream-net:
+    driver: bridge
+volumes:
+  edustream_postgres_data:
+  edustream_minio_data:
