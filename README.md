@@ -22,7 +22,7 @@ EduStream is a microservice-based online education platform for courses, webinar
 - Webinar capacity balancing
 
 ## Local Run
-1. `cd task_10`
+1. `cd 'your/project/folder'`
 2. `docker compose up --build -d`
 3. Gateway: `http://localhost:8380/health`
 4. Frontend: `http://localhost:5176`
