@@ -92,7 +92,7 @@ export function DashboardPage() {
       return "loading";
     }
     if (status === "failed") {
-      return "fallback";
+      return "Service unavailable";
     }
     return "live";
   }, [status]);
@@ -118,7 +118,7 @@ export function DashboardPage() {
       <header className="hero">
         <div className="hero-copy">
           <p className="eyebrow">EduStream Ecosystem</p>
-          <h1>Courses, webinars, testing, and learner momentum in one control room.</h1>
+          <h1>Learning overview</h1>
           <p className="sub">
             EduStream brings together adaptive recommendations, automated grading, live webinar orchestration, and
             certificate delivery for online education teams.
@@ -141,12 +141,12 @@ export function DashboardPage() {
             <input value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="STU-001" />
           </label>
           <div className="hero-actions">
-            <button onClick={refresh}>Refresh dashboard</button>
+            <button onClick={refresh} disabled={status === "loading"}>Refresh dashboard</button>
             <button className="ghost" onClick={() => setTheme((current) => (current === "light" ? "dark" : "light"))}>
               Theme
             </button>
           </div>
-          <p className="status-line">Status: {statusLabel}</p>
+          <p className="status-line" role="status" aria-live="polite">Status: {statusLabel}</p>
         </div>
       </header>
 
@@ -170,7 +170,7 @@ export function DashboardPage() {
         <KpiCard title="Dropout Risk" value={dropoutRisk.toFixed(2)} target="Keep under 0.35" ok={dropoutRisk < 0.35} />
       </section>
 
-      {error ? <div className="error-banner">{error}</div> : null}
+      {error ? <div className="error-banner" role="alert">{error}</div> : null}
 
       <section className="content-grid">
         <article className="panel panel-featured">
